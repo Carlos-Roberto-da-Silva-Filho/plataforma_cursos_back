@@ -28,7 +28,7 @@ module.exports = (req, res, next) => {
     // 4. Verificar e decodificar o token JWT
     try {
         // Usa jwt.verify para validar o token com o segredo definido no seu arquivo .env
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
         // Se o token for válido, anexar o payload decodificado ao objeto 'req.user'
         // Isso torna as informações do usuário (id, email) disponíveis para os controllers

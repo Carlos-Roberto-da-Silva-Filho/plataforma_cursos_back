@@ -174,32 +174,34 @@ A seguir, estão as principais rotas da API com seus métodos HTTP, URLs, requis
     * **Query Parameters (Opcional):** `filtro` (string para buscar por nome ou descrição)
         * Ex: `/cursos?filtro=javascript`
     * **Respostas:**
-        * `200 OK`: `[ { "id": 1, "nome": "Curso de Node.js", "descricao": "...", "capa": "...", "inscricoes": 10, "inicio": "DD/MM/YYYY", "inscrito": true/false } ]`
+        * **Respostas:**
+    * `200 OK`: `[ { "id": 1, "nome": "Curso de Node.js", "descricao": "...", "capa": "http://localhost:3000/images/nome_do_arquivo.jpg", "inscricoes": 10, "inicio": "DD/MM/YYYY", "inscrito": true/false } ]`
         * `403 Forbidden`: `{"mensagem": "Token não fornecido!"}`
         * `401 Unauthorized`: `{"mensagem": "Token Invalido!"}`
         * `500 Internal Server Error`: `{"mensagem": "Erro ao buscar cursos: ..."}`
 
 * **Inscrever-se em um Curso**
-    * `POST /cursos/:idCurso/inscrever`
+    **Inscrever-se em um Curso**
+    * `POST /cursos/:idCurso`
     * **Autenticação:** JWT Obrigatório
     * **Parâmetros de URL:** `:idCurso` (ID do curso)
     * **Requisição:** Vazia
     * **Respostas:**
         * `200 OK`: `{"mensagem": "Inscrição realizada com sucesso"}`
         * `403 Forbidden`: `{"mensagem": "Token não fornecido!"}`
-        * `401 Unauthorized`: `{"mensagem": "Token Invalido!"}`
+        * `401 Unauthorized`: `{"mensagem": "Token Inválido!"}`
         * `404 Not Found`: `{"mensagem": "Curso não encontrado!"}`
         * `400 Bad Request`: `{"mensagem": "Usuário já inscrito neste curso!"}`
 
 * **Cancelar Inscrição em um Curso**
-    * `PATCH /cursos/:idCurso/cancelar`
+    * `PATCH /cursos/:idCurso`
     * **Autenticação:** JWT Obrigatório
     * **Parâmetros de URL:** `:idCurso` (ID do curso)
     * **Requisição:** Vazia
     * **Respostas:**
         * `200 OK`: `{"mensagem": "Inscrição cancelada com sucesso!"}`
         * `403 Forbidden`: `{"mensagem": "Token não fornecido!"}`
-        * `401 Unauthorized`: `{"mensagem": "Token Invalido!"}`
+        * `401 Unauthorized`: `{"mensagem": "Token Inválido!"}`
         * `404 Not Found`: `{"mensagem": "Inscrição não encontrada ou já cancelada."}`
         * `400 Bad Request`: `{"mensagem": "Erro ao cancelar inscrição."}`
 
