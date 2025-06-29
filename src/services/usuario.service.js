@@ -6,11 +6,11 @@ const moment = require('moment')
 const Usuario = require('../models/Usuario')
 
 const UsuarioService = {
-    async cadastrar({ nome, email, senha, nascimento }){
+    async cadastrar({ nome, email, senha, nascimento }) {
         const existe = await Usuario.findOne({
             where: { email }
         })
-        if(existe){
+        if (existe) {
             throw { status: 400, mensagem: 'Email já cadastrado' }
         }
 
@@ -23,8 +23,8 @@ const UsuarioService = {
         const senhaHash = await bcrypt.hash(senha, 10)
 
         const usuario = await Usuario.create({
-            nome, 
-            email, 
+            nome,
+            email,
             senha: senhaHash,
             nascimento: nascimentoDate.format('YYYY-MM-DD') // Formato ISO - date string
         });
@@ -38,18 +38,29 @@ const UsuarioService = {
         return returnUsuario
     },
 
-    // ... (método listar para verificar)
-
-    async login({ email, senha }){
-        const usuario = await Usuario.findOne({
-            where: {email}
+    async listar() {
+        const usuarios = await Usuario.findAll({
+            attributes: ['id', 'nome', 'email', 'nascimento', 'criado_em']
         })
-        if(!usuario){
+        return usuarios.map(u => ({
+            id: u.id,
+            nome: u.nome,
+            email: u.email,
+            nascimento: moment(u.nascimento).format('DD/MM/YYYY'),
+            criado_em: moment(u.criado_em).format('DD/MM/YYYY HH:mm:ss')
+        }))
+    },
+
+    async login({ email, senha }) {
+        const usuario = await Usuario.findOne({
+            where: { email }
+        })
+        if (!usuario) {
             throw { status: 401, mensagem: 'Email ou senha inválidos' }
         }
 
         const senhaValida = await bcrypt.compare(senha, usuario.senha)
-        if(!senhaValida){
+        if (!senhaValida) {
             throw { status: 401, mensagem: 'Email ou senha inválidos' }
         }
 

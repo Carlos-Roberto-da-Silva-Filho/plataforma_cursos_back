@@ -3,12 +3,8 @@
 const InscricaoService = require('../services/inscricao.service') // Importa o serviço de inscrições
 
 const InscricaoController = {
-    /**
-     * Lida com a requisição POST para inscrever um usuário em um curso.
-     * Espera o ID do curso nos parâmetros da URL e o ID do usuário no req.user (do middleware de autenticação).
-     * @param {Object} req - O objeto de requisição do Express (req.user.id e req.params.idCurso).
-     * @param {Object} res - O objeto de resposta do Express.
-     */
+    // Lida com a requisição POST para inscrever um usuário em um curso
+    // Espera o ID do curso nos parâmetros da URL e o ID do usuário no req.user (do middleware de autenticação)
     async inscrever(req, res) {
         try {
             // Obtém o ID do usuário logado a partir do token (decodificado pelo authMiddleware)
@@ -34,12 +30,8 @@ const InscricaoController = {
         }
     },
 
-    /**
-     * Lida com a requisição PATCH para cancelar a inscrição de um usuário em um curso.
-     * Espera o ID do curso nos parâmetros da URL e o ID do usuário no req.user.
-     * @param {Object} req - O objeto de requisição do Express.
-     * @param {Object} res - O objeto de resposta do Express.
-     */
+     // Lida com a requisição PATCH para cancelar a inscrição de um usuário em um curso
+     // Espera o ID do curso nos parâmetros da URL e o ID do usuário no req.user
     async cancelar(req, res) {
         try {
             // Obtém o ID do usuário logado

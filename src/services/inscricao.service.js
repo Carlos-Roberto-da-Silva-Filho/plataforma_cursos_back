@@ -1,95 +1,85 @@
 // src/services/inscricao.service.js
 
-const Inscricao = require('../models/Inscricao') // Modelo de Inscrição
-const Curso = require('../models/Curso')       // Modelo de Curso (para verificar se o curso existe)
-const sequelize = require('../../config/database') // Sua instância Sequelize (útil para queries diretas, se precisar)
+const Inscricao = require('../models/Inscricao')
+const Curso = require('../models/Curso')
+const sequelize = require('../../config/database')
+const moment = require('moment')
 
 const InscricaoService = {
-    /**
-     * Realiza a inscrição de um usuário em um curso.
-     * @param {number} usuarioId - O ID do usuário logado.
-     * @param {number} cursoId - O ID do curso no qual o usuário deseja se inscrever.
-     * @returns {Object} A nova inscrição criada.
-     * @throws {Object} Erro com status e mensagem.
-     */
     async inscrever(usuarioId, cursoId) {
         try {
-            // 1. Verificar se o curso existe
             const curso = await Curso.findByPk(cursoId)
             if (!curso) {
-                // Lança um erro customizado que o controller pode entender
                 throw { status: 404, mensagem: 'Curso não encontrado!' }
             }
 
-            // 2. Verificar se o usuário já está inscrito e a inscrição não foi cancelada
-            const inscricaoExistente = await Inscricao.findOne({
+            // Verifica se o usuário já tem uma inscrição ATIVA para este curso
+            const existente = await Inscricao.findOne({
                 where: {
                     usuario_id: usuarioId,
                     curso_id: cursoId,
-                    data_cancelamento: null // Garante que a inscrição não está cancelada
+                    data_cancelamento: null // Procura por uma inscrição ATIVA
                 }
             })
 
-            if (inscricaoExistente) {
-                throw { status: 409, mensagem: 'Usuário já inscrito neste curso!' } // 409 Conflito
+            if (existente) {
+                throw { status: 400, mensagem: 'Usuário já inscrito neste curso!' } // Lançar com status
             }
 
-            // 3. Criar a nova inscrição
             const novaInscricao = await Inscricao.create({
                 usuario_id: usuarioId,
                 curso_id: cursoId,
-                data_inscricao: new Date(), // Define a data/hora atual da inscrição
-                data_cancelamento: null     // Garante que não há data de cancelamento inicialmente
+                data_inscricao: moment().toDate(), // Usa moment para garantir um objeto Date
+                data_cancelamento: null
             })
 
-            return novaInscricao // Retorna o objeto da inscrição criada
+            return novaInscricao
 
         } catch (error) {
-            console.error('Erro ao inscrever usuário no curso:', error)
-            // Re-lança o erro (se já for padronizado) ou lança um erro 500 genérico
-            if (error.status && error.mensagem) {
-                throw error // Propaga erros de validação/não encontrado
+            // Propaga o erro com status se já tiver, senão lança 400 genérico
+            if (error.status) {
+                throw error
             }
-            throw { status: 500, mensagem: 'Erro interno do servidor ao tentar se inscrever no curso.' }
+            throw { status: 400, mensagem: error.message }
         }
     },
 
-    /**
-     * Cancela a inscrição de um usuário em um curso.
-     * @param {number} usuarioId - O ID do usuário logado.
-     * @param {number} cursoId - O ID do curso para cancelar a inscrição.
-     * @returns {Object} A inscrição atualizada (com data_cancelamento).
-     * @throws {Object} Erro com status e mensagem.
-     */
     async cancelar(usuarioId, cursoId) {
         try {
-            // 1. Encontrar a inscrição ativa (não cancelada)
+            // Encontra a inscrição ATIVA do usuário para o curso
             const inscricao = await Inscricao.findOne({
                 where: {
                     usuario_id: usuarioId,
                     curso_id: cursoId,
-                    data_cancelamento: null // Apenas inscrições ativas podem ser canceladas
+                    data_cancelamento: null // Apenas inscrições ATIVAS podem ser canceladas
                 }
-            });
+            })
 
             if (!inscricao) {
                 throw { status: 404, mensagem: 'Inscrição não encontrada ou já cancelada.' }
             }
 
-            // 2. Atualizar a data_cancelamento
-            inscricao.data_cancelamento = new Date()
-            await inscricao.save() // Salva as mudanças no banco de dados
+            // Atualiza a data_cancelamento (comportamento PATCH)
+            inscricao.data_cancelamento = moment().toDate()
+            await inscricao.save() // Salva a alteração no banco
 
-            return inscricao // Retorna a inscrição atualizada
+            // Retorna a inscrição atualizada
+            return {
+                id: inscricao.id,
+                usuario_id: inscricao.usuario_id,
+                curso_id: inscricao.curso_id,
+                data_inscricao: moment(inscricao.data_inscricao).format('DD/MM/YYYY HH:mm:ss'),
+                data_cancelamento: moment(inscricao.data_cancelamento).format('DD/MM/YYYY HH:mm:ss')
+            }
 
         } catch (error) {
-            console.error('Erro ao cancelar inscrição (Service):', error)
-            if (error.status && error.mensagem) {
+            // Propaga o erro com status se já tiver, senão lança 400 genérico
+            if (error.status) {
                 throw error
             }
-            throw { status: 500, mensagem: 'Erro interno do servidor ao tentar cancelar a inscrição.' }
+            throw { status: 400, mensagem: error.message }
         }
     }
-};
+}
 
 module.exports = InscricaoService
