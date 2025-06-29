@@ -16,11 +16,11 @@ router.get('/', CursoController.listarCursos)
 
 // Rota para inscrever um usuário em um curso (EXIGE AUTENTICAÇÃO)
 // POST /cursos/:idCurso/inscrever
-router.post('/:idCurso/inscrever', InscricaoController.inscrever)
+router.post('/:idCurso', InscricaoController.inscrever)
 
 // Rota para cancelar a inscrição de um usuário em um curso (EXIGE AUTENTICAÇÃO)
 // PATCH /cursos/:idCurso/cancelar
-router.patch('/:idCurso/cancelar', InscricaoController.cancelar)
+router.patch('/:idCurso', InscricaoController.cancelar)
 
 
 

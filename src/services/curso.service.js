@@ -45,7 +45,7 @@ const CursoService = {
             id: curso.id,
             nome: curso.nome,
             descricao: curso.descricao,
-            capa: curso.capa,
+            capa: curso.capa ? (curso.capa.startsWith('http') ? curso.capa : `http://localhost:3000/images/${curso.capa}`) : null,
             inscricoes: curso.getDataValue('total_inscricoes'),
             inicio: moment(curso.inicio).format('DD/MM/YYYY'), // Formata a data de início
             inscrito: curso.getDataValue('usuario_inscrito') > 0 // Verifica se o usuário logado está inscrito
@@ -80,7 +80,7 @@ const CursoService = {
             id: curso.id,
             nome: curso.nome,
             descricao: curso.descricao,
-            capa: curso.capa,
+            capa: curso.capa ? (curso.capa.startsWith('http') ? curso.capa : `http://localhost:3000/images/${curso.capa}`) : null,
             inscricoes: curso.getDataValue('total_inscricoes'),
             inicio: moment(curso.inicio).format('DD/MM/YYYY'), // Formata a data de início
             inscricao_cancelada: curso.getDataValue('inscricao_cancelada') > 0,

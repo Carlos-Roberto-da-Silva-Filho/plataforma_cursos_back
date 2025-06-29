@@ -29,7 +29,7 @@ const UsuarioController = {
                 httpOnly: true,
             })
 
-            res.status(200).json({ token: token }) // Retornar o token também no corpo da resposta para o frontend
+            res.status(200).json(token) // Retornar o token para o frontend
         } catch (error) {
             res.status(error.status || 500).json({ mensagem: error.mensagem || 'Erro interno do servidor ao realizar login.' })
         }
